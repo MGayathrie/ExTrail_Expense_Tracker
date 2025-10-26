@@ -1,0 +1,57 @@
+<nav class="h-full w-64 bg-black flex flex-col justify-between">
+  <div>
+    <div class="flex items-center justify-center h-28">
+      <span class="text-3xl font-extrabold text-white tracking-wider">Extrail</span>
+    </div>
+    <ul class="mt-4 space-y-1">
+      <li>
+        <a routerLink="/dashboard" routerLinkActive="bg-white/10 font-bold"
+          class="flex items-center px-8 py-3 text-white hover:bg-white/10 rounded transition-all">
+          <span class="material-icons-outlined mr-3">home</span>
+          Dashboard
+        </a>
+      </li>
+      <li>
+        <a routerLink="/transactions" routerLinkActive="bg-white/10 font-bold"
+          class="flex items-center px-8 py-3 text-white hover:bg-white/10 rounded transition-all">
+          <span class="material-icons-outlined mr-3">receipt_long</span>
+          Transactions
+        </a>
+      </li>
+      <li>
+        <a routerLink="/accounts" routerLinkActive="bg-white/10 font-bold"
+          class="flex items-center px-8 py-3 text-white hover:bg-white/10 rounded transition-all">
+          <span class="material-icons-outlined mr-3">account_balance_wallet</span>
+          Accounts
+        </a>
+      </li>
+      <li>
+        <a routerLink="/budgets" routerLinkActive="bg-white/10 font-bold"
+          class="flex items-center px-8 py-3 text-white hover:bg-white/10 rounded transition-all">
+          <span class="material-icons-outlined mr-3">pie_chart</span>
+          Budgets
+        </a>
+      </li>
+      <li>
+        <a routerLink="/analysis" routerLinkActive="bg-white/10 font-bold"
+          class="flex items-center px-8 py-3 text-white hover:bg-white/10 rounded transition-all">
+          <span class="material-icons-outlined mr-3">bar_chart</span>
+          Analysis
+        </a>
+      </li>
+      <li>
+        <a routerLink="/categories" routerLinkActive="bg-white/10 font-bold"
+          class="flex items-center px-8 py-3 text-white hover:bg-white/10 rounded transition-all">
+          <span class="material-icons-outlined mr-3">category</span>
+          Categories
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div class="mb-5 flex flex-col items-center">
+    <button (click)="logout()"
+      class="flex items-center px-8 py-3 text-white hover:bg-white/10 rounded transition-all w-full justify-center">
+      <span class="material-icons-outlined mr-2">logout</span>Log out
+    </button>
+  </div>
+</nav>

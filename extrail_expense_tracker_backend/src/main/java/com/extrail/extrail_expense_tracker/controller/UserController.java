@@ -18,10 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.extrail.extrail_expense_tracker.dao.entity.UserEntity;
-import com.extrail.extrail_expense_tracker.dto.UserAthuDto;
 import com.extrail.extrail_expense_tracker.dto.UserDto;
 import com.extrail.extrail_expense_tracker.dto.UserPasswordUpdateDto;
-import com.extrail.extrail_expense_tracker.exception.InvalidActionException;
 import com.extrail.extrail_expense_tracker.services.UserServices;
 
 import jakarta.validation.Valid;
@@ -85,15 +83,15 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<UserDto> authenticate(@Valid @RequestBody UserAthuDto login) {
-        LOG.info("Entered authenticate() in controller...");
-        return userServices.authenticate(login)
-                .map(u -> new ResponseEntity<>(
-                        new UserDto(u.getUserId(), u.getUserName(), u.getEmail(), u.getPhone(), u.getRoles(), u.isDeactivated(), u.getCreatedAt()),
-                        HttpStatus.OK))
-                .orElseThrow(() -> new InvalidActionException("Invalid credentials"));
-    }
+    // @PostMapping("/authenticate")
+    // public ResponseEntity<UserDto> authenticate(@Valid @RequestBody UserAthuDto login) {
+    //     LOG.info("Entered authenticate() in controller...");
+    //     return userServices.authenticate(login)
+    //             .map(u -> new ResponseEntity<>(
+    //                     new UserDto(u.getUserId(), u.getUserName(), u.getEmail(), u.getPhone(), u.getRoles(), u.isDeactivated(), u.getCreatedAt()),
+    //                     HttpStatus.OK))
+    //             .orElseThrow(() -> new InvalidActionException("Invalid credentials"));
+    // }
 
     @GetMapping("/get-user-by-role")
     public ResponseEntity<List<UserDto>> getUserByRole(@RequestParam String roleName) {

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,15 +12,14 @@ import com.extrail.extrail_expense_tracker.dao.RolesDao;
 import com.extrail.extrail_expense_tracker.dao.UserDao;
 import com.extrail.extrail_expense_tracker.dao.entity.RolesEntity;
 import com.extrail.extrail_expense_tracker.dao.entity.UserEntity;
-import com.extrail.extrail_expense_tracker.dto.UserAthuDto;
 import com.extrail.extrail_expense_tracker.dto.UserDto;
 import com.extrail.extrail_expense_tracker.dto.UserPasswordUpdateDto;
-import com.extrail.extrail_expense_tracker.utils.BCryptUtil;
-import com.extrail.extrail_expense_tracker.utils.Mapper;
 import com.extrail.extrail_expense_tracker.exception.EntityDeletedException;
 import com.extrail.extrail_expense_tracker.exception.EntityNotFountException;
 import com.extrail.extrail_expense_tracker.exception.InvalidActionException;
 import com.extrail.extrail_expense_tracker.exception.UserNameNotFountException;
+import com.extrail.extrail_expense_tracker.utils.BCryptUtil;
+import com.extrail.extrail_expense_tracker.utils.Mapper;
 
 import jakarta.transaction.Transactional;
 
@@ -122,10 +120,10 @@ public UserDto addUser(UserEntity newUser) {
     return Mapper.convertToUserDto(u);
   }
 
-  public Optional<UserEntity> authenticate(UserAthuDto login) {
-    return userDao.findByUserName(login.getUserName())
-        .filter(u -> BCryptUtil.verifyPassword(login.getPasswordHash(), u.getPasswordHash()));
-  }
+  // public Optional<UserEntity> authenticate(UserAthuDto login) {
+  //   return userDao.findByUserName(login.getUserName())
+  //       .filter(u -> BCryptUtil.verifyPassword(login.getPasswordHash(), u.getPasswordHash()));
+  // }
 
   public List<UserDto> getUserByRole(String roleName) {
     List<UserEntity> users = userDao.findByRoleName(roleName);

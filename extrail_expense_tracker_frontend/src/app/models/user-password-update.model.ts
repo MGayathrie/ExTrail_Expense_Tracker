@@ -1,5 +1,5 @@
 export interface UserPasswordUpdateModel {
-  userId: number;
+  userId?: number;
   oldPassword: string;
   newPassword: string;
 }

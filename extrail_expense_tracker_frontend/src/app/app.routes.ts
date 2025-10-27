@@ -7,15 +7,21 @@ import { Categories } from './components/router-outlet/categories/categories';
 import { Analysis } from './components/router-outlet/analysis/analysis';
 import { Profile } from './components/router-outlet/profile/profile';
 import { Authmodule } from './components/router-outlet/authmodule/authmodule';
+import { Login } from './components/router-outlet/authmodule/login/login';
+import { Register } from './components/router-outlet/authmodule/register/register';
+import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-    { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
-    { path: 'login', component: Authmodule },
-    { path: 'dashboard', component: Dashboard },
-    { path: 'accounts', component: Accounts },
-    { path: 'transactions', component: Transactions },
-    { path: 'budgets', component: Budgets },
-    { path: 'categories', component: Categories },
-    { path: 'analysis', component: Analysis },
-    { path: 'profile', component: Profile }
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: 'login', component: Login },
+  { path: 'register', component: Register },
+  { path: 'logout', component: Authmodule },
+  { path: 'dashboard', component: Dashboard, canActivate: [AuthGuard] },
+  { path: 'accounts', component: Accounts, canActivate: [AuthGuard] },
+  { path: 'transactions', component: Transactions, canActivate: [AuthGuard] },
+  { path: 'budgets', component: Budgets, canActivate: [AuthGuard] },
+  { path: 'categories', component: Categories, canActivate: [AuthGuard] },
+  { path: 'analysis', component: Analysis, canActivate: [AuthGuard] },
+  { path: 'profile', component: Profile, canActivate: [AuthGuard] },
+  { path: '**', redirectTo: '/login' }
 ];

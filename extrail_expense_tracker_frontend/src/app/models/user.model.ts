@@ -11,6 +11,7 @@ export interface UserModel {
 }
 
 // Shape useful when creating a user via /users/add-user (requires password)
+
 export interface UserCreateModel extends Omit<UserModel, 'userId' | 'createdAt'> {
   passwordHash: string;
 }

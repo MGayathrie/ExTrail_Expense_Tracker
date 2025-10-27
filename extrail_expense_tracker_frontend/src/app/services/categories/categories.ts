@@ -7,7 +7,7 @@ import {
   CategoryType,
   CreateGlobalCategoryRequest,
   CreateUserCategoryRequest,
-} from '../../models/categories.mode.l';
+} from '../../models/categories.model';
 
 @Injectable({
   providedIn: 'root'

@@ -8,11 +8,15 @@ import { UserResponseModel } from '../../models/user-response.model';
   providedIn: 'root'
 })
 export class Login {
-  private baseUrl = 'http://localhost:8080/auth';
+  constructor(private httpclient: HttpClient) {}
+  // private baseUrl = 'http://localhost:8080/auth';
+  baseUrl: string = "http://localhost:8080/auth";
 
-  constructor(private http: HttpClient) {}
+  // authenticate(credentials: UserAuthModel): Observable<UserResponseModel> {
+  //   return this.httpclient.post<UserResponseModel>(`${this.baseUrl}/validate`, credentials);
+  // }
 
-  authenticate(credentials: UserAuthModel): Observable<UserResponseModel> {
-    return this.http.post<UserResponseModel>(`${this.baseUrl}/validate`, credentials);
+  validateUser(User: UserAuthModel): Observable<UserResponseModel> {
+    return this.httpclient.post<UserResponseModel>(`${this.baseUrl}/validate`, User);
   }
 }

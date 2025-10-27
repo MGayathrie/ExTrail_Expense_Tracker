@@ -10,8 +10,15 @@ import { Auth } from '../../services/auth/auth';
 })
 export class Sidebar {
   constructor(private router: Router, private auth: Auth) {}
-  logout() {
-    this.auth.logout();
-    this.router.navigate(['/login']);
+  // logout() {
+  //   // Example: Remove tokens from localStorage/sessionStorage
+  //   localStorage.removeItem('token');
+  //   sessionStorage.clear();
+  //   // Add any service logout logic (e.g., clear auth state/caches)
+  //   this.router.navigate(['/login']);
+  // }
+
+   logout() {
+    this.auth.logout(); // This will clear token and redirect to login
   }
 }

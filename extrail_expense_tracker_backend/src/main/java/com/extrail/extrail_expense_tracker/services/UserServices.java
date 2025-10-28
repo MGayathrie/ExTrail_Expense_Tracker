@@ -133,6 +133,18 @@ public UserDto addUser(UserEntity newUser) {
     return users.stream().map(Mapper::convertToUserDto).toList();
   }
 
+  @Transactional
+public UserDto reactivateUser(Integer userId) {
+    UserEntity user = userDao.findById(userId)
+        .orElseThrow(() -> new EntityNotFountException(userId, "User"));
+    
+    user.setDeactivated(false);  // Reactivate the user
+    userDao.save(user);
+    
+    return Mapper.convertToUserDto(user);
+}
+
+
 
 //   private UserDto toDto(UserEntity e) {
 //     UserDto dto = new UserDto();

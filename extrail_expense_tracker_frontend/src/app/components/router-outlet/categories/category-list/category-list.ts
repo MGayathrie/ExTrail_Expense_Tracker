@@ -23,7 +23,7 @@ export class CategoryList {
   }
 
   isUserCategory(category: CategoriesModel): boolean {
-    return category.scope === CategoryScope.user && category.ownerUserId === this.userId;
+    return category.scope === CategoryScope.user && category.ownerUser === this.userId;
   }
 
   onEdit(category: CategoriesModel): void {

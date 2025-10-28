@@ -74,12 +74,13 @@ export class CategoryForm implements OnInit{
       });
     } else {
       // Create new user category
-      const categoryData = {
-        categoryName: formValue.categoryName.trim(),
-        description: formValue.description?.trim() || null,
-        categoryType: formValue.categoryType,
-        ownerUserId: this.userId
-      };
+// In category-form.ts, line 80-85
+const categoryData = {
+  categoryName: formValue.categoryName.trim(),
+  description: formValue.description?.trim() || null,
+  categoryType: formValue.categoryType,
+  ownerUser: this.userId  // Changed from ownerUserId to OwnerUser
+};
 
       this.categoriesService.createUserCategory(categoryData).subscribe({
         next: () => {

@@ -1,1 +1,237 @@
-<p>admin-users works!</p>
+<!-- src/app/components/admin/admin-users/admin-users.html -->
+<div class="p-8 space-y-6 bg-gray-50 min-h-screen">
+  <!-- Header -->
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">User Management</h1>
+    <p class="text-gray-600 mt-1">View and manage all user accounts</p>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="flex items-center justify-between gap-4">
+    <!-- Search -->
+    <div class="flex-1 max-w-md">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange()"
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+        placeholder="Search by username, email, or phone..."
+      />
+    </div>
+
+    <!-- Status Filter -->
+    <select
+      [(ngModel)]="filterStatus"
+      (ngModelChange)="onFilterChange()"
+      class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white"
+    >
+      <option value="all">All Users</option>
+      <option value="active">Active Only</option>
+      <option value="deactivated">Deactivated Only</option>
+    </select>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex items-center justify-center h-64">
+    <div class="text-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+      <p class="mt-4 text-gray-600">Loading users...</p>
+    </div>
+  </div>
+
+  <!-- Users Table -->
+  <div
+    *ngIf="!isLoading"
+    class="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 overflow-hidden"
+  >
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="bg-gray-50 border-b border-gray-200">
+            <th
+              class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              User
+            </th>
+            <th
+              class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Email
+            </th>
+            <th
+              class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Phone
+            </th>
+            <th
+              class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Roles
+            </th>
+            <th
+              class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Status
+            </th>
+            <th
+              class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Joined
+            </th>
+            <th
+              class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <tr *ngFor="let user of filteredUsers" class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center text-white font-bold"
+                >
+                  {{ user.userName.charAt(0).toUpperCase() }}
+                </div>
+                <div>
+                  <p class="font-semibold text-gray-900">{{ user.userName }}</p>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-600">{{ user.email }}</td>
+            <td class="px-6 py-4 text-sm text-gray-600">{{ user.phone }}</td>
+            <td class="px-6 py-4">
+              <span
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+              >
+                {{ getUserRoles(user) }}
+              </span>
+            </td>
+            <td class="px-6 py-4">
+              <span
+                *ngIf="!user.deactivated"
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
+              >
+                Active
+              </span>
+              <span
+                *ngIf="user.deactivated"
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"
+              >
+                Deactivated
+              </span>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-600">{{ formatDate(user.createdAt) }}</td>
+            <td class="px-6 py-4 text-center">
+              <button
+                (click)="viewUserDetails(user)"
+                class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all text-sm font-medium"
+              >
+                View Details
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredUsers.length === 0" class="p-12 text-center">
+      <div class="text-6xl mb-4">👥</div>
+      <h3 class="text-xl font-semibold text-gray-900 mb-2">No Users Found</h3>
+      <p class="text-gray-600">Try adjusting your search or filter criteria</p>
+    </div>
+  </div>
+
+  <!-- User Detail Modal -->
+  <div
+    *ngIf="showUserModal && selectedUser"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-lg"
+    (click)="onBackgroundClick($event)"
+  >
+    <div
+      class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl transform transition-all"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xl font-bold text-gray-900">User Details</h3>
+          <button
+            (click)="closeUserModal()"
+            class="p-2 hover:bg-white rounded-lg transition-colors"
+          >
+            <span class="material-icons text-gray-600">close</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 space-y-6">
+        <!-- User Info -->
+        <div class="flex items-center gap-4 pb-6 border-b border-gray-200">
+          <div
+            class="w-20 h-20 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center text-white text-3xl font-bold"
+          >
+            {{ selectedUser.userName.charAt(0).toUpperCase() }}
+          </div>
+          <div>
+            <h4 class="text-2xl font-bold text-gray-900">{{ selectedUser.userName }}</h4>
+            <p class="text-gray-600">{{ getUserRoles(selectedUser) }}</p>
+          </div>
+        </div>
+
+        <!-- Details Grid -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <p class="text-sm font-medium text-gray-600">Email</p>
+            <p class="text-gray-900 font-semibold">{{ selectedUser.email }}</p>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-600">Phone</p>
+            <p class="text-gray-900 font-semibold">{{ selectedUser.phone }}</p>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-600">Status</p>
+            <span
+              *ngIf="!selectedUser.deactivated"
+              class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800"
+            >
+              Active
+            </span>
+            <span
+              *ngIf="selectedUser.deactivated"
+              class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800"
+            >
+              Deactivated
+            </span>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-600">Member Since</p>
+            <p class="text-gray-900 font-semibold">{{ formatDate(selectedUser.createdAt) }}</p>
+          </div>
+        </div>
+
+        <!-- Deactivate Button -->
+<!-- UPDATE: Action Buttons in User Detail Modal -->
+<div class="pt-4 border-t border-gray-200 space-y-3">
+  <!-- DEACTIVATE BUTTON (for active users) -->
+  <button *ngIf="!selectedUser.deactivated"
+          (click)="deactivateUser(selectedUser.userId!)"
+          class="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-semibold">
+    Deactivate User Account
+  </button>
+  
+  <!-- REACTIVATE BUTTON (for deactivated users) -->
+  <button *ngIf="selectedUser.deactivated"
+          (click)="reactivateUser(selectedUser.userId!)"
+          class="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-semibold">
+    ✓ Reactivate User Account
+  </button>
+</div>
+
+      </div>
+    </div>
+  </div>
+</div>

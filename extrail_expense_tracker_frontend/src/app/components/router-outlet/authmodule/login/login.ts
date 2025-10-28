@@ -38,28 +38,53 @@ export class Login implements OnInit{
     return this.loginForm.get('password');
   }
 
-  onLogin(): void {
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
-      return;
-    }
+  // src/app/auth/login/login.component.ts - UPDATE onLogin() METHOD
 
-    this.errorMessage = '';
-    this.isLoading = true;
+// src/app/auth/login/login.component.ts - UPDATE onLogin() METHOD
 
-    const { username, password } = this.loginForm.value;
+// src/app/components/auth/login/login.component.ts
 
-    this.authService.login(username, password).subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.router.navigate(['/dashboard']);
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.errorMessage = err.error?.message || 'Invalid credentials. Please try again.';
-      }
-    });
+onLogin(): void {
+  if (this.loginForm.invalid) {
+    this.loginForm.markAllAsTouched();
+    return;
   }
+
+  this.errorMessage = '';
+  this.isLoading = true;
+
+  const { username, password } = this.loginForm.value;
+
+  this.authService.login(username, password).subscribe({
+    next: (response) => {
+      this.isLoading = false;
+      
+      // ADD THIS: Route based on user role
+      const user = response.user;
+      console.log('Login response user:', user); // DEBUG LOG
+      
+      const isAdmin = user?.roles?.some((role: any) => 
+        role.roleName?.toUpperCase() === 'ADMIN'
+      );
+      
+      console.log('Is admin?', isAdmin); // DEBUG LOG
+      
+      if (isAdmin) {
+        console.log('Redirecting to /admin'); // DEBUG LOG
+        this.router.navigate(['/admin']);
+      } else {
+        console.log('Redirecting to /dashboard'); // DEBUG LOG
+        this.router.navigate(['/dashboard']);
+      }
+    },
+    error: (err) => {
+      this.isLoading = false;
+      this.errorMessage = err.error?.message || 'Invalid credentials. Please try again.';
+      console.error('Login error:', err); // DEBUG LOG
+    }
+  });
+}
+
 
   goToRegister(): void {
     this.router.navigate(['/register']);

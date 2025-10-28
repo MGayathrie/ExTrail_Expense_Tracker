@@ -1,1 +1,18 @@
-<p>admin-topbar works!</p>
+<!-- src/app/components/admin/admin-topbar/admin-topbar.html -->
+<header class="h-20 bg-white flex items-center justify-between px-10 shadow-md border-b border-gray-200">
+  <div class="flex items-center gap-4">
+    <div class="text-2xl font-extrabold tracking-wide bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+      Admin Dashboard
+    </div>
+    <span class="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded-full">ADMIN</span>
+  </div>
+  
+  <div class="flex items-center gap-4">
+    <span class="text-gray-700 font-medium">{{ userName }}</span>
+    <button (click)="goToProfile()" 
+            class="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-full shadow-lg transition-all transform hover:scale-105"
+            aria-label="Profile">
+      <span class="material-icons text-white text-2xl">account_circle</span>
+    </button>
+  </div>
+</header>

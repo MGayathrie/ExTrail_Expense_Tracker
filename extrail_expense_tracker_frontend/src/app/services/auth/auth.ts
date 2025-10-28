@@ -167,4 +167,25 @@ private apiUrl = 'http://localhost:8080/auth';
       'Content-Type': 'application/json'
     });
   }
+
+  // src/app/services/auth/auth.ts - ADD THESE METHODS
+
+// Check if current user is admin
+isAdmin(): boolean {
+  const user = this.getUser();
+  if (!user || !user.roles) return false;
+  
+  return user.roles.some((role: any) => 
+    role.roleName && role.roleName.toUpperCase() === 'ADMIN'
+  );
+}
+
+// Get user role names as array
+getUserRoles(): string[] {
+  const user = this.getUser();
+  if (!user || !user.roles) return [];
+  
+  return user.roles.map((role: any) => role.roleName);
+}
+
 }

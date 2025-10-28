@@ -16,20 +16,34 @@ import { AdminDashboard } from './components/admin/admin-dashboard/admin-dashboa
 import { AdminUsers } from './components/admin/admin-users/admin-users';
 import { AdminCategories } from './components/admin/admin-categories/admin-categories';
 import { AdminProfile } from './components/admin/admin-profile/admin-profile';
+import { Layout } from './components/layout/layout';
 
 export const routes: Routes = [
+  // Default redirect
   { path: '', redirectTo: '/login', pathMatch: 'full' },
+  
+  // Auth routes (no layout)
   { path: 'login', component: Login },
   { path: 'register', component: Register },
   { path: 'logout', component: Authmodule },
-  { path: 'dashboard', component: Dashboard, canActivate: [AuthGuard] },
-  { path: 'accounts', component: Accounts, canActivate: [AuthGuard] },
-  { path: 'transactions', component: Transactions, canActivate: [AuthGuard] },
-  { path: 'budgets', component: Budgets, canActivate: [AuthGuard] },
-  { path: 'categories', component: Categories, canActivate: [AuthGuard] },
-  { path: 'analysis', component: Analysis, canActivate: [AuthGuard] },
-  { path: 'profile', component: Profile, canActivate: [AuthGuard] },
-  { path: '**', redirectTo: '/login' },
+  
+  // User routes (wrapped in LayoutComponent)
+  {
+    path: '',
+    component: Layout,
+    canActivate: [AuthGuard],
+    children: [
+      { path: 'dashboard', component: Dashboard },
+      { path: 'accounts', component: Accounts },
+      { path: 'transactions', component: Transactions },
+      { path: 'budgets', component: Budgets },
+      { path: 'categories', component: Categories },
+      { path: 'analysis', component: Analysis },
+      { path: 'profile', component: Profile }
+    ]
+  },
+  
+  // Admin routes (wrapped in AdminLayout)
   {
     path: 'admin',
     component: AdminLayout,
@@ -41,5 +55,8 @@ export const routes: Routes = [
       { path: 'categories', component: AdminCategories },
       { path: 'profile', component: AdminProfile }
     ]
-  }
+  },
+  
+  // Wildcard redirect
+  { path: '**', redirectTo: '/login' }
 ];

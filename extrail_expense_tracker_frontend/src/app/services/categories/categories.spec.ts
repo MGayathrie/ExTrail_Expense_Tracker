@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Categories } from './categories-service';
+import { CategoriesService } from './categories-service';
+import { Categories } from '../../components/router-outlet/categories/categories';
 
 describe('Categories', () => {
   let service: Categories;

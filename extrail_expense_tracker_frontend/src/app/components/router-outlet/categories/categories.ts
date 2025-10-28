@@ -54,12 +54,12 @@ export class Categories implements OnInit{
     if (this.selectedFilter === 'all') {
       // Show all categories (global + user's own categories)
       this.filteredCategories = this.allCategories.filter(cat => 
-        cat.scope === CategoryScope.global || cat.ownerUserId === this.userId
+        cat.scope === CategoryScope.global || cat.ownerUser === this.userId
       );
     } else {
       // Show only user's categories
       this.filteredCategories = this.allCategories.filter(cat => 
-        cat.scope === CategoryScope.user && cat.ownerUserId === this.userId
+        cat.scope === CategoryScope.user && cat.ownerUser === this.userId
       );
     }
   }
@@ -109,6 +109,8 @@ export class Categories implements OnInit{
   }
 
   get userCount(): number {
-    return this.allCategories.filter(c => c.scope === CategoryScope.user && c.ownerUserId === this.userId).length;
+    return this.allCategories.filter(c => c.scope === CategoryScope.user && c.ownerUser === this.userId).length;
   }
+
+  
 }

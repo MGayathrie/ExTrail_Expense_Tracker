@@ -70,6 +70,8 @@ public class UserController {
         return new ResponseEntity<>(userServices.updateUser(updatedUser), HttpStatus.OK);
     }
 
+
+
     @PutMapping("/update-password")
     public ResponseEntity<UserDto> updatePassword(@Valid @RequestBody UserPasswordUpdateDto updatedPassword) {
         LOG.info("Entered updatePassword() in controller...");
@@ -98,4 +100,11 @@ public class UserController {
         LOG.info("Entered getUserByRole() in controller...");
         return new ResponseEntity<>(userServices.getUserByRole(roleName), HttpStatus.OK);
     }
+
+    @PutMapping("/reactivate-user")
+public ResponseEntity<UserDto> reactivateUser(@RequestParam Integer userId) {
+    LOG.info("Entered reactivateUser() in controller...");
+    return new ResponseEntity<>(userServices.reactivateUser(userId), HttpStatus.OK);
+}
+
 }

@@ -14,7 +14,7 @@ export interface CategoriesModel {
   description?: string;
   categoryType: CategoryType;
   scope: CategoryScope;
-  ownerUserId?: number | null; // null when global
+  ownerUser?: number | null; // null when global
   createdAt?: string;
   updatedAt?: string;
 }
@@ -24,7 +24,7 @@ export interface CreateUserCategoryRequest {
   categoryName: string;
   description?: string;
   categoryType: CategoryType;
-  ownerUserId: number;
+  ownerUser: number;
 }
 
 export interface CreateGlobalCategoryRequest {

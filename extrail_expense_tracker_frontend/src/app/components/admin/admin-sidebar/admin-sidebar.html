@@ -1,1 +1,59 @@
-<p>admin-sidebar works!</p>
+<!-- src/app/components/admin/admin-sidebar/admin-sidebar.html -->
+<nav class="h-full w-64 bg-black flex flex-col justify-between">
+  <div>
+    <!-- Logo -->
+    <div class="flex items-center justify-center h-28">
+      <div class="text-center">
+        <span class="text-3xl font-extrabold text-white tracking-wider">Extrail</span>
+        <p class="text-xs text-purple-400 mt-1 font-semibold">ADMIN PANEL</p>
+      </div>
+    </div>
+    
+    <!-- Menu Items -->
+    <ul class="mt-4 space-y-1">
+      <li>
+        <a routerLink="/admin/dashboard" 
+           routerLinkActive="bg-white/10 font-bold"
+           class="flex items-center px-8 py-3 text-white hover:bg-white/10 rounded transition-all">
+          <span class="material-icons-outlined mr-3">dashboard</span>
+          Dashboard
+        </a>
+      </li>
+      
+      <li>
+        <a routerLink="/admin/users" 
+           routerLinkActive="bg-white/10 font-bold"
+           class="flex items-center px-8 py-3 text-white hover:bg-white/10 rounded transition-all">
+          <span class="material-icons-outlined mr-3">people</span>
+          Users
+        </a>
+      </li>
+      
+      <li>
+        <a routerLink="/admin/categories" 
+           routerLinkActive="bg-white/10 font-bold"
+           class="flex items-center px-8 py-3 text-white hover:bg-white/10 rounded transition-all">
+          <span class="material-icons-outlined mr-3">category</span>
+          Categories
+        </a>
+      </li>
+      
+      <li>
+        <a routerLink="/admin/profile" 
+           routerLinkActive="bg-white/10 font-bold"
+           class="flex items-center px-8 py-3 text-white hover:bg-white/10 rounded transition-all">
+          <span class="material-icons-outlined mr-3">account_circle</span>
+          Profile
+        </a>
+      </li>
+    </ul>
+  </div>
+  
+  <!-- Logout Button -->
+  <div class="mb-5 flex flex-col items-center">
+    <button (click)="logout()"
+      class="flex items-center px-8 py-3 text-white hover:bg-white/10 rounded transition-all w-full justify-center">
+      <span class="material-icons-outlined mr-2">logout</span>Log out
+    </button>
+  </div>
+</nav>

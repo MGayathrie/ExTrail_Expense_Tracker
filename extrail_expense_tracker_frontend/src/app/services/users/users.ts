@@ -34,9 +34,16 @@ export class Users {
     return this.http.post<UserModel>(`${this.baseUrl}/add-user`, newUser);
   }
 
-  updateUser(updatedUser: Partial<UserCreateModel> & { userId: number }): Observable<UserModel> {
-    return this.http.put<UserModel>(`${this.baseUrl}/update-user`, updatedUser);
-  }
+  // updateUser(updatedUser: Partial<UserCreateModel> & { userId: number }): Observable<UserModel> {
+  //   return this.http.put<UserModel>(`${this.baseUrl}/update-user`, updatedUser);
+  // }
+
+  // src/app/services/users/users.service.ts
+
+updateUser(updatedUser: any): Observable<UserModel> {
+  return this.http.put<UserModel>(`${this.baseUrl}/update-user`, updatedUser);
+}
+
 
   updatePassword(updatedPassword: UserPasswordUpdateModel): Observable<UserModel> {
     return this.http.put<UserModel>(`${this.baseUrl}/update-password`, updatedPassword);
@@ -51,4 +58,10 @@ export class Users {
     const params = new HttpParams().set('roleName', roleName);
     return this.http.get<UserModel[]>(`${this.baseUrl}/get-user-by-role`, { params });
   }
+
+  reactivateUser(userId: number): Observable<UserModel> {
+  const params = new HttpParams().set('userId', userId);
+  return this.http.put<UserModel>(`${this.baseUrl}/reactivate-user`, null, { params });
+}
+
 }

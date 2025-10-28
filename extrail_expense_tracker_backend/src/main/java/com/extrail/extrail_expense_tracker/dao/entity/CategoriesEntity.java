@@ -73,11 +73,19 @@ public class CategoriesEntity {
     // CategoriesEntity.java - ADD THIS
 
     // ADD THIS: Expose ownerUserId as Integer for JSON
-    @Transient
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    public Integer getOwnerUserId() {
-        return ownerUser != null ? ownerUser.getUserId() : null;
-    }
+    // @Transient
+    // @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    // public Integer getOwnerUserId() {
+    //     return ownerUser != null ? ownerUser.getUserId() : null;
+    // }
+
+    // In CategoriesEntity.java
+@Transient
+@JsonProperty("ownerUser")  // Add this annotation to ensure it's serialized
+public Integer getOwnerUserId() {
+    return ownerUser != null ? ownerUser.getUserId() : null;
+}
+
 
     // ADD THIS: For backwards compatibility
     @JsonIgnore

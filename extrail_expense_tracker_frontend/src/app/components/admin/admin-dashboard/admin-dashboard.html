@@ -1,1 +1,175 @@
-<p>admin-dashboard works!</p>
+<!-- src/app/components/admin/admin-dashboard/admin-dashboard.html -->
+<div class="p-8 space-y-6 bg-gray-50 min-h-screen">
+  <!-- Header -->
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+    <p class="text-gray-600 mt-1">Overview of system statistics and metrics</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex items-center justify-center h-64">
+    <div class="text-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+      <p class="mt-4 text-gray-600">Loading dashboard...</p>
+    </div>
+  </div>
+
+  <!-- Statistics Grid -->
+  <div *ngIf="!isLoading" class="space-y-6">
+    
+    <!-- User Statistics -->
+    <div>
+      <h2 class="text-xl font-bold text-gray-900 mb-4">User Statistics</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Total Users</p>
+              <p class="text-3xl font-bold text-gray-900 mt-2">{{ stats.totalUsers }}</p>
+            </div>
+            <div class="p-3 bg-blue-100 rounded-full">
+              <span class="material-icons text-blue-600 text-3xl">people</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Active Users</p>
+              <p class="text-3xl font-bold text-green-600 mt-2">{{ stats.activeUsers }}</p>
+            </div>
+            <div class="p-3 bg-green-100 rounded-full">
+              <span class="material-icons text-green-600 text-3xl">check_circle</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Deactivated</p>
+              <p class="text-3xl font-bold text-red-600 mt-2">{{ stats.deactivatedUsers }}</p>
+            </div>
+            <div class="p-3 bg-red-100 rounded-full">
+              <span class="material-icons text-red-600 text-3xl">block</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transaction Statistics -->
+    <div>
+      <h2 class="text-xl font-bold text-gray-900 mb-4">Transaction Statistics</h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Total Transactions</p>
+              <p class="text-3xl font-bold text-gray-900 mt-2">{{ stats.totalTransactions }}</p>
+            </div>
+            <div class="p-3 bg-purple-100 rounded-full">
+              <span class="material-icons text-purple-600 text-3xl">receipt_long</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Total Income</p>
+              <p class="text-3xl font-bold text-green-600 mt-2">{{ formatCurrency(stats.totalIncome) }}</p>
+            </div>
+            <div class="p-3 bg-green-100 rounded-full">
+              <span class="material-icons text-green-600 text-3xl">trending_up</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Total Expenses</p>
+              <p class="text-3xl font-bold text-red-600 mt-2">{{ formatCurrency(stats.totalExpenses) }}</p>
+            </div>
+            <div class="p-3 bg-red-100 rounded-full">
+              <span class="material-icons text-red-600 text-3xl">trending_down</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Net Balance</p>
+              <p class="text-3xl font-bold mt-2" 
+                 [class.text-green-600]="netBalance >= 0"
+                 [class.text-red-600]="netBalance < 0">
+                {{ formatCurrency(netBalance) }}
+              </p>
+            </div>
+            <div class="p-3 bg-yellow-100 rounded-full">
+              <span class="material-icons text-yellow-600 text-3xl">account_balance</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category & Budget Statistics -->
+    <div>
+      <h2 class="text-xl font-bold text-gray-900 mb-4">System Statistics</h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Total Categories</p>
+              <p class="text-3xl font-bold text-gray-900 mt-2">{{ stats.totalCategories }}</p>
+            </div>
+            <div class="p-3 bg-indigo-100 rounded-full">
+              <span class="material-icons text-indigo-600 text-3xl">category</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Global Categories</p>
+              <p class="text-3xl font-bold text-blue-600 mt-2">{{ stats.globalCategories }}</p>
+            </div>
+            <div class="p-3 bg-blue-100 rounded-full">
+              <span class="material-icons text-blue-600 text-3xl">public</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">User Categories</p>
+              <p class="text-3xl font-bold text-purple-600 mt-2">{{ stats.userCategories }}</p>
+            </div>
+            <div class="p-3 bg-purple-100 rounded-full">
+              <span class="material-icons text-purple-600 text-3xl">person</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Active Budgets</p>
+              <p class="text-3xl font-bold text-pink-600 mt-2">{{ stats.activeBudgets }}</p>
+            </div>
+            <div class="p-3 bg-pink-100 rounded-full">
+              <span class="material-icons text-pink-600 text-3xl">pie_chart</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

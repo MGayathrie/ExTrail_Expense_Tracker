@@ -9,10 +9,21 @@ export class AdminGuard implements CanActivate {
 
   canActivate(): boolean {
     const user = this.authService.getUser();
-    const isAdmin = user?.roles?.some((r: { roleName: string; }) => r.roleName.toUpperCase() === 'ADMIN');
+    console.log('AdminGuard - User:', user); // DEBUG LOG
     
-    if (isAdmin) return true;
+    if (user && user.roles && Array.isArray(user.roles)) {
+      const isAdmin = user.roles.some((role: any) => 
+        role.roleName?.toUpperCase() === 'ADMIN'
+      );
+      
+      console.log('AdminGuard - Is Admin?', isAdmin); // DEBUG LOG
+      
+      if (isAdmin) {
+        return true;
+      }
+    }
     
+    console.log('AdminGuard - Redirecting to /dashboard'); // DEBUG LOG
     this.router.navigate(['/dashboard']);
     return false;
   }

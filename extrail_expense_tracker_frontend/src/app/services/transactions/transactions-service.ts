@@ -6,7 +6,7 @@ import { TransactionsModel } from '../../models/transactions.model';
 @Injectable({
   providedIn: 'root'
 })
-export class Transactions {
+export class TransactionsService {
   private baseUrl = 'http://localhost:8080/transactions';
 
   constructor(private http: HttpClient) {}

@@ -1,1 +1,21 @@
-<p>bar-chart works!</p>
+<!-- src/app/components/dashboard/bar-chart/bar-chart.html -->
+<div class="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 p-6">
+  <h3 class="text-xl font-bold text-gray-800 mb-6">Monthly Overview</h3>
+  
+  <div class="h-80">
+    <canvas #barCanvas></canvas>
+  </div>
+
+  <div class="mt-6 grid grid-cols-2 gap-4">
+    <div class="text-center p-4 bg-cyan-50 rounded-lg">
+      <p class="text-sm font-medium text-cyan-700">Income</p>
+      <p class="text-2xl font-bold text-cyan-600 mt-1">{{ formatCurrency(monthlyData.income) }}</p>
+    </div>
+    <div class="text-center p-4 bg-rose-50 rounded-lg">
+      <p class="text-sm font-medium text-rose-700">Expenses</p>
+      <p class="text-2xl font-bold text-rose-600 mt-1">{{ formatCurrency(monthlyData.expenses) }}</p>
+    </div>
+  </div>
+
+  <div class="mt-4 text-center text-sm text-gray-500">{{ monthlyData.month }}</div>
+</div>

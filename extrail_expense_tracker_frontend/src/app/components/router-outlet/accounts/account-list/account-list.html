@@ -1,1 +1,150 @@
-<p>account-list works!</p>
+<!-- src/app/components/accounts/account-list/account-list.html -->
+<div class="space-y-6">
+  <!-- No Accounts Message -->
+  <div *ngIf="accounts.length === 0" 
+       class="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 p-12 text-center">
+    <div class="text-6xl mb-4">🏦</div>
+    <h3 class="text-xl font-semibold text-gray-900 mb-2">No Accounts Yet</h3>
+    <p class="text-gray-600">Add your first account to start tracking your finances</p>
+  </div>
+
+  <!-- Bank Accounts Section -->
+  <div *ngIf="accountsByType.bank.length > 0">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+      <span class="text-2xl">🏦</span>
+      <span>Bank Accounts</span>
+      <span class="text-sm font-normal text-gray-500">({{ accountsByType.bank.length }})</span>
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div *ngFor="let account of accountsByType.bank" 
+           class="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-6 hover:shadow-lg transition-all group">
+        <!-- Account Header -->
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">
+              🏦
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-900">{{ account.accountName }}</h3>
+              <p class="text-xs text-gray-500">Bank Account</p>
+            </div>
+          </div>
+          <button (click)="onDelete(account.accountId!)"
+                  class="opacity-0 group-hover:opacity-100 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                  title="Delete Account">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Balance -->
+        <div class="pt-4 border-t border-gray-100">
+          <p class="text-sm text-gray-500 mb-1">Current Balance</p>
+          <p class="text-2xl font-bold" 
+             [class.text-gray-900]="!isNegative(account.accountBalance)"
+             [class.text-red-600]="isNegative(account.accountBalance)">
+            {{ formatCurrency(account.accountBalance) }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card Accounts Section -->
+  <div *ngIf="accountsByType.card.length > 0">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+      <span class="text-2xl">💳</span>
+      <span>Cards</span>
+      <span class="text-sm font-normal text-gray-500">({{ accountsByType.card.length }})</span>
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div *ngFor="let account of accountsByType.card" 
+           class="bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl shadow-lg p-6 text-white hover:shadow-xl transition-all group relative overflow-hidden">
+        <!-- Card Pattern Background -->
+        <div class="absolute inset-0 opacity-10">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -mr-16 -mt-16"></div>
+          <div class="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full -ml-12 -mb-12"></div>
+        </div>
+
+        <!-- Card Content -->
+        <div class="relative z-10">
+          <!-- Header -->
+          <div class="flex items-start justify-between mb-6">
+            <div class="flex items-center gap-3">
+              <div class="text-3xl">💳</div>
+              <div>
+                <h3 class="font-semibold text-white">{{ account.accountName }}</h3>
+                <p class="text-xs text-white opacity-75">Credit/Debit Card</p>
+              </div>
+            </div>
+            <button (click)="onDelete(account.accountId!)"
+                    class="opacity-0 group-hover:opacity-100 p-2 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-all"
+                    title="Delete Account">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Balance -->
+          <div>
+            <p class="text-sm text-white opacity-75 mb-1">Available Balance</p>
+            <p class="text-3xl font-bold text-white">
+              {{ formatCurrency(account.accountBalance) }}
+            </p>
+          </div>
+
+          <!-- Card Chip Decoration -->
+          <div class="mt-6 flex items-center justify-between">
+            <div class="w-12 h-8 bg-yellow-400 rounded opacity-50"></div>
+            <div class="text-xs text-white opacity-50">•••• •••• •••• ••••</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cash Accounts Section -->
+  <div *ngIf="accountsByType.cash.length > 0">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+      <span class="text-2xl">💵</span>
+      <span>Cash</span>
+      <span class="text-sm font-normal text-gray-500">({{ accountsByType.cash.length }})</span>
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div *ngFor="let account of accountsByType.cash" 
+           class="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-6 hover:shadow-lg transition-all group">
+        <!-- Account Header -->
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center text-2xl">
+              💵
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-900">{{ account.accountName }}</h3>
+              <p class="text-xs text-gray-500">Cash</p>
+            </div>
+          </div>
+          <button (click)="onDelete(account.accountId!)"
+                  class="opacity-0 group-hover:opacity-100 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                  title="Delete Account">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Balance -->
+        <div class="pt-4 border-t border-gray-100">
+          <p class="text-sm text-gray-500 mb-1">Current Balance</p>
+          <p class="text-2xl font-bold" 
+             [class.text-gray-900]="!isNegative(account.accountBalance)"
+             [class.text-red-600]="isNegative(account.accountBalance)">
+            {{ formatCurrency(account.accountBalance) }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -21,5 +21,5 @@ public class CreateUserCategoryRequestDto {
         private CategoryType categoryType;
         
         @NotNull(message = "Owner userId must not be null")
-        private Integer ownerUserId;
+        private Integer OwnerUser;
 }

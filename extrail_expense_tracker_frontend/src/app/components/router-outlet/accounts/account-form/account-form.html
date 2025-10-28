@@ -1,1 +1,97 @@
-<p>account-form works!</p>
+<!-- src/app/components/accounts/account-form/account-form.html -->
+<div 
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 
+         bg-gray-900/60 backdrop-blur-lg"
+  (click)="onBackgroundClick($event)">
+
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all"
+       (click)="$event.stopPropagation()">
+    
+    <!-- Header -->
+    <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-bold text-gray-900">Add New Account</h3>
+        <button (click)="onClose()" 
+                class="p-2 hover:bg-white rounded-lg transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="accountForm" (ngSubmit)="onSubmit()" class="p-6 space-y-5">
+      
+      <!-- Account Type -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-3">Account Type</label>
+        <div class="grid grid-cols-3 gap-3">
+          <label *ngFor="let type of accountTypes" 
+                 class="relative cursor-pointer">
+            <input type="radio" 
+                   formControlName="accountType" 
+                   [value]="type.value"
+                   class="peer sr-only">
+            <div class="p-4 text-center border-2 border-gray-200 rounded-xl hover:border-purple-300 peer-checked:border-purple-600 peer-checked:bg-purple-50 transition-all">
+              <div class="text-3xl mb-1">{{ type.icon }}</div>
+              <div class="text-xs font-medium text-gray-700">{{ type.label }}</div>
+            </div>
+          </label>
+        </div>
+        <div *ngIf="accountForm.get('accountType')?.invalid && accountForm.get('accountType')?.touched" 
+             class="text-red-600 text-sm mt-1">
+          Please select an account type
+        </div>
+      </div>
+
+      <!-- Account Name -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Account Name</label>
+        <input type="text" 
+               formControlName="accountName"
+               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+               placeholder="e.g., HDFC Savings, My Wallet">
+        <div *ngIf="accountForm.get('accountName')?.invalid && accountForm.get('accountName')?.touched" 
+             class="text-red-600 text-sm mt-1">
+          Account name is required
+        </div>
+      </div>
+
+      <!-- Initial Balance -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Initial Balance</label>
+        <input type="number" 
+               formControlName="accountBalance"
+               step="0.01"
+               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+               placeholder="0.00">
+        <p class="text-xs text-gray-500 mt-1">Enter the current balance of this account</p>
+        <div *ngIf="accountForm.get('accountBalance')?.invalid && accountForm.get('accountBalance')?.touched" 
+             class="text-red-600 text-sm mt-1">
+          Initial balance must be 0 or greater
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="bg-red-100 text-red-700 px-4 py-3 rounded-lg text-sm">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-3 pt-4">
+        <button type="button" 
+                (click)="onClose()"
+                class="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+          Cancel
+        </button>
+        <button type="submit" 
+                [disabled]="isSubmitting"
+                class="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition-all disabled:opacity-50">
+          {{ isSubmitting ? 'Creating...' : 'Create Account' }}
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>

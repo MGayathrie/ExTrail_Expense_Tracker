@@ -1,89 +1,32 @@
-<div class="p-6 space-y-6">
-  <!-- Summary cards -->
-  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-    <!-- Total Balance -->
-    <div class="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-5">
-      <p class="text-sm text-gray-500">Total Balance</p>
-      <p class="mt-2 text-3xl font-semibold text-gray-900">$11,150.00</p>
-      <p class="mt-2 text-xs text-emerald-600 flex items-center gap-1">
-        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        0% from last month
-      </p>
-    </div>
-    <!-- Monthly Income -->
-    <div class="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-5">
-      <p class="text-sm text-gray-500">Monthly Income</p>
-      <p class="mt-2 text-3xl font-semibold text-cyan-600">$12,000.00</p>
-      <p class="mt-2 text-xs text-gray-400">This month</p>
-    </div>
-    <!-- Monthly Expenses -->
-    <div class="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-5">
-      <p class="text-sm text-gray-500">Monthly Expenses</p>
-      <p class="mt-2 text-3xl font-semibold text-rose-600">$850.00</p>
-      <p class="mt-2 text-xs text-gray-400">This month</p>
-    </div>
-    <!-- Savings Rate -->
-    <div class="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-5">
-      <p class="text-sm text-gray-500">Savings Rate</p>
-      <p class="mt-2 text-3xl font-semibold text-gray-900">92.9%</p>
-      <p class="mt-2 text-xs text-gray-400">of income</p>
+<!-- src/app/components/dashboard/dashboard.html -->
+<div class="p-8 space-y-8 bg-gray-50 min-h-screen">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex items-center justify-center h-64">
+    <div class="text-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+      <p class="mt-4 text-gray-600">Loading dashboard...</p>
     </div>
   </div>
 
-  <!-- Charts -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <!-- Spending by Category (donut placeholder) -->
-    <div class="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-5">
-      <h3 class="text-lg font-semibold text-gray-800">Spending by Category</h3>
-      <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
-        <div class="mx-auto">
-          <!-- Simple SVG donut chart (static proportions) -->
-          <svg viewBox="0 0 42 42" class="h-56 w-56">
-            <!-- track -->
-            <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#eef2f7" stroke-width="6"></circle>
-            <!-- segments: values: 35, 25, 20, 12, 8 -->
-            <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#f59e0b" stroke-width="6"
-                    stroke-dasharray="35 65" stroke-dashoffset="25"></circle>
-            <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#ec4899" stroke-width="6"
-                    stroke-dasharray="25 75" stroke-dashoffset="-10"></circle>
-            <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#3b82f6" stroke-width="6"
-                    stroke-dasharray="20 80" stroke-dashoffset="-35"></circle>
-            <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#10b981" stroke-width="6"
-                    stroke-dasharray="12 88" stroke-dashoffset="-55"></circle>
-            <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#6366f1" stroke-width="6"
-                    stroke-dasharray="8 92" stroke-dashoffset="-67"></circle>
-            <!-- hole -->
-            <circle cx="21" cy="21" r="9" fill="#ffffff"></circle>
-          </svg>
-        </div>
-        <ul class="space-y-2">
-          <li class="flex items-center gap-2 text-sm text-gray-700"><span class="h-3 w-3 rounded-sm bg-pink-500 inline-block"></span> Food</li>
-          <li class="flex items-center gap-2 text-sm text-gray-700"><span class="h-3 w-3 rounded-sm bg-cyan-500 inline-block"></span> Transportation</li>
-          <li class="flex items-center gap-2 text-sm text-gray-700"><span class="h-3 w-3 rounded-sm bg-amber-500 inline-block"></span> Housing</li>
-          <li class="flex items-center gap-2 text-sm text-gray-700"><span class="h-3 w-3 rounded-sm bg-emerald-500 inline-block"></span> Entertainment</li>
-          <li class="flex items-center gap-2 text-sm text-gray-700"><span class="h-3 w-3 rounded-sm bg-indigo-500 inline-block"></span> Shopping</li>
-        </ul>
-      </div>
+  <!-- Error State -->
+  <div *ngIf="errorMessage && !isLoading" class="bg-red-100 text-red-700 px-4 py-3 rounded-lg">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Dashboard Content -->
+  <ng-container *ngIf="dashboardData && !isLoading">
+    <!-- Summary Cards -->
+    <div class="mb-8">
+      <app-summary-cards [data]="dashboardData"></app-summary-cards>
     </div>
 
-    <!-- Monthly Overview (bar chart placeholder) -->
-    <div class="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-5">
-      <h3 class="text-lg font-semibold text-gray-800">Monthly Overview</h3>
-      <div class="mt-6">
-        <div class="flex items-end gap-6 h-64 w-full border border-gray-100 rounded-lg p-6">
-          <!-- Income bar -->
-          <div class="flex-1">
-            <div class="h-[85%] bg-cyan-500 rounded-md"></div>
-            <p class="mt-2 text-center text-xs text-gray-500">Income</p>
-          </div>
-          <!-- Expenses bar -->
-          <div class="flex-1">
-            <div class="h-[15%] bg-rose-500 rounded-md"></div>
-            <p class="mt-2 text-center text-xs text-gray-500">Expenses</p>
-          </div>
-        </div>
-        <div class="mt-3 text-xs text-gray-400">June 25</div>
-      </div>
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+      <!-- Pie Chart -->
+      <app-pie-chart [categoryData]="dashboardData.categorySpending"></app-pie-chart>
+
+      <!-- Bar Chart -->
+      <app-bar-chart [monthlyData]="dashboardData.monthlyOverview"></app-bar-chart>
     </div>
-  </div>
+  </ng-container>
 </div>

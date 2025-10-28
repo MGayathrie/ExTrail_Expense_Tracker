@@ -4,9 +4,11 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static com.extrail.extrail_expense_tracker.controller.AccountsController.LOG;
 import com.extrail.extrail_expense_tracker.dao.AccountsDao;
 import com.extrail.extrail_expense_tracker.dao.CategoriesDao;
 import com.extrail.extrail_expense_tracker.dao.TransactionsDao;
@@ -15,9 +17,9 @@ import com.extrail.extrail_expense_tracker.dao.entity.AccountsEntity;
 import com.extrail.extrail_expense_tracker.dao.entity.CategoriesEntity;
 import com.extrail.extrail_expense_tracker.dao.entity.TransactionsEntity;
 import com.extrail.extrail_expense_tracker.dao.entity.UserEntity;
+import com.extrail.extrail_expense_tracker.exception.EntityDeletedException;
 import com.extrail.extrail_expense_tracker.exception.EntityNotFountException;
 import com.extrail.extrail_expense_tracker.exception.InvalidActionException;
-import com.extrail.extrail_expense_tracker.exception.EntityDeletedException;
 import com.extrail.extrail_expense_tracker.utils.CategoryScope;
 import com.extrail.extrail_expense_tracker.utils.CategoryType;
 import com.extrail.extrail_expense_tracker.utils.TxType;
@@ -98,29 +100,96 @@ public class TransactionsServices {
         return transactionsDao.findByUserUserIdAndCategoryCategoryIdOrderByDateDesc(userId, categoryId);
     }
 
-    public TransactionsEntity updateTransaction(Integer transactionId, TransactionsEntity update) {
-        if (transactionId == null) throw new InvalidActionException("Transaction ID must not be null");
-        if (update == null) throw new InvalidActionException("Update payload must not be null");
+@Transactional
+public TransactionsEntity updateTransaction(Integer transactionId, TransactionsEntity update) {
+    if (transactionId == null) throw new InvalidActionException("Transaction ID must not be null");
+    if (update == null) throw new InvalidActionException("Update payload must not be null");
 
-        TransactionsEntity existing = transactionsDao.findById(transactionId)
-                .orElseThrow(() -> new EntityNotFountException(transactionId, "Transaction"));
+    TransactionsEntity existing = transactionsDao.findById(transactionId)
+            .orElseThrow(() -> new EntityNotFountException(transactionId, "Transaction"));
 
-        if (update.getUser() != null) existing.setUser(resolveUser(update.getUser()));
-        if (update.getAccount() != null) existing.setAccount(resolveAccount(update.getAccount()));
-        if (update.getCategory() != null) existing.setCategory(resolveCategory(update.getCategory()));
-
-        if (update.getAmount() != null) {
-            if (update.getAmount().compareTo(BigDecimal.ZERO) <= 0)
-                throw new InvalidActionException("Amount must be greater than zero");
-            existing.setAmount(update.getAmount());
-        }
-        if (update.getTransactionType() != null) existing.setTransactionType(update.getTransactionType());
-        if (update.getDescription() != null) existing.setDescription(update.getDescription());
-        if (update.getDate() != null) existing.setDate(update.getDate());
-        //if (update.getTransferGroupId() != null) existing.setTransferGroupId(update.getTransferGroupId());
-
-        return transactionsDao.saveAndFlush(existing);
+    Integer oldAccountId = existing.getAccount().getAccountId();
+    BigDecimal oldAmount = existing.getAmount();
+    TxType oldType = existing.getTransactionType();
+    
+    LOG.info("UPDATE TRANSACTION - OLD: accountId={}, amount={}, type={}", oldAccountId, oldAmount, oldType);
+    
+    // Get fresh account
+    AccountsEntity oldAccount = accountsDao.findById(oldAccountId)
+            .orElseThrow(() -> new EntityNotFountException(oldAccountId, "Account"));
+    
+    BigDecimal balanceBeforeRevert = oldAccount.getAccountBalance();
+    LOG.info("Account balance BEFORE revert: {}", balanceBeforeRevert);
+    
+    // REVERT old transaction
+    if (oldType == TxType.income) {
+        oldAccount.setAccountBalance(oldAccount.getAccountBalance().subtract(oldAmount));
+        LOG.info("Reverting income: {} - {} = {}", balanceBeforeRevert, oldAmount, oldAccount.getAccountBalance());
+    } else {
+        oldAccount.setAccountBalance(oldAccount.getAccountBalance().add(oldAmount));
+        LOG.info("Reverting expense: {} + {} = {}", balanceBeforeRevert, oldAmount, oldAccount.getAccountBalance());
     }
+    
+    accountsDao.saveAndFlush(oldAccount);
+    LOG.info("Account balance AFTER revert and save: {}", oldAccount.getAccountBalance());
+
+    // Apply updates
+    if (update.getUser() != null) existing.setUser(resolveUser(update.getUser()));
+    if (update.getCategory() != null) existing.setCategory(resolveCategory(update.getCategory()));
+    
+    if (update.getAmount() != null) {
+        if (update.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new InvalidActionException("Amount must be greater than zero");
+        }
+        LOG.info("Updating amount from {} to {}", existing.getAmount(), update.getAmount());
+        existing.setAmount(update.getAmount());
+    }
+    
+    if (update.getTransactionType() != null) existing.setTransactionType(update.getTransactionType());
+    if (update.getDescription() != null) existing.setDescription(update.getDescription());
+    if (update.getDate() != null) existing.setDate(update.getDate());
+    
+    // Determine new account
+    Integer newAccountId;
+    if (update.getAccount() != null) {
+        AccountsEntity newAccountRef = resolveAccount(update.getAccount());
+        newAccountId = newAccountRef.getAccountId();
+        existing.setAccount(newAccountRef);
+    } else {
+        newAccountId = oldAccountId;
+    }
+
+    LOG.info("UPDATE TRANSACTION - NEW: accountId={}, amount={}, type={}", newAccountId, existing.getAmount(), existing.getTransactionType());
+
+    // Get fresh new account
+    AccountsEntity newAccount = accountsDao.findById(newAccountId)
+            .orElseThrow(() -> new EntityNotFountException(newAccountId, "Account"));
+    
+    BigDecimal balanceBeforeApply = newAccount.getAccountBalance();
+    LOG.info("New account balance BEFORE apply: {}", balanceBeforeApply);
+    
+    // APPLY new transaction
+    BigDecimal newAmount = existing.getAmount();
+    TxType newType = existing.getTransactionType();
+    
+    if (newType == TxType.income) {
+        newAccount.setAccountBalance(newAccount.getAccountBalance().add(newAmount));
+        LOG.info("Applying income: {} + {} = {}", balanceBeforeApply, newAmount, newAccount.getAccountBalance());
+    } else {
+        newAccount.setAccountBalance(newAccount.getAccountBalance().subtract(newAmount));
+        LOG.info("Applying expense: {} - {} = {}", balanceBeforeApply, newAmount, newAccount.getAccountBalance());
+    }
+    
+    accountsDao.saveAndFlush(newAccount);
+    LOG.info("Account balance AFTER apply and save: {}", newAccount.getAccountBalance());
+
+    TransactionsEntity saved = transactionsDao.saveAndFlush(existing);
+    LOG.info("Transaction updated successfully. Final account balance: {}", newAccount.getAccountBalance());
+    
+    return saved;
+}
+
+
 
     public void deleteTransactionById(Integer transactionId) {
         if (transactionId == null) throw new InvalidActionException("Transaction ID must not be null");

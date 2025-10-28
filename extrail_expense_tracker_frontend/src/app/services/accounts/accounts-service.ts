@@ -6,14 +6,18 @@ import { AccountsModel, AccountType } from '../../models/accounts.model';
 @Injectable({
   providedIn: 'root'
 })
-export class Accounts {
+export class AccountsService {
   private baseUrl = 'http://localhost:8080/accounts';
 
   constructor(private http: HttpClient) {}
 
-  addAccount(account: AccountsModel): Observable<AccountsModel> {
-    return this.http.post<AccountsModel>(`${this.baseUrl}/add-account`, account);
-  }
+// src/app/services/accounts/accounts.service.ts
+
+createAccount(account: AccountsModel): Observable<AccountsModel> {
+  // Change from 'add-account' to 'create-account'
+  return this.http.post<AccountsModel>(`${this.baseUrl}/create-account`, account);
+}
+
 
   getAccountById(accountId: number): Observable<AccountsModel> {
     const params = new HttpParams().set('accountId', accountId);

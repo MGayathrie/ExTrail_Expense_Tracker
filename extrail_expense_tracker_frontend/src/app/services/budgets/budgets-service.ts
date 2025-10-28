@@ -6,7 +6,7 @@ import { BudgetsModel } from '../../models/budgets.model';
 @Injectable({
   providedIn: 'root'
 })
-export class Budgets {
+export class BudgetsService {
   private baseUrl = 'http://localhost:8080/budgets';
 
   constructor(private http: HttpClient) {}

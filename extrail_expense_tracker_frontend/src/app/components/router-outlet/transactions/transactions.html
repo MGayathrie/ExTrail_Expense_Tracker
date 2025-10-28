@@ -1,4 +1,77 @@
-<div class="p-6">
-  <h2 class="text-2xl font-bold mb-4">Transactions</h2>
-  <p>transactions works!</p>
+<!-- src/app/components/transactions/transactions.html -->
+<div class="p-8 space-y-6 bg-gray-50 min-h-screen">
+  <div class="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 p-6">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <!-- Filters -->
+      <div class="flex flex-wrap gap-4">
+        <!-- Type Filter -->
+        <select [(ngModel)]="selectedType" (change)="onFilterChange()"
+                class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+          <option value="all">All Types</option>
+          <option value="income">Income</option>
+          <option value="expense">Expense</option>
+        </select>
+
+        <!-- Category Filter - FIXED -->
+        <select [(ngModel)]="selectedCategory" (ngModelChange)="onFilterChange()"
+                class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+          <option [ngValue]="0">All Categories</option>
+          <option *ngFor="let cat of allCategories; trackBy: trackByCategory" 
+                  [ngValue]="cat.categoryId">
+            {{ cat.categoryName }}
+          </option>
+        </select>
+
+        <!-- Month Filter -->
+        <select [(ngModel)]="selectedMonth" (change)="onFilterChange()"
+                class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+          <option *ngFor="let month of months" [value]="month.value">{{ month.label }}</option>
+        </select>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-3">
+        <button (click)="openIncomeForm()"
+                class="flex items-center justify-center w-12 h-12 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg shadow-md transition-all"
+                title="Add Income">
+          <span class="text-2xl font-bold">+</span>
+        </button>
+
+        <button (click)="openExpenseForm()"
+                class="flex items-center justify-center w-12 h-12 bg-rose-500 hover:bg-rose-600 text-white rounded-lg shadow-md transition-all"
+                title="Add Expense">
+          <span class="text-2xl font-bold">−</span>
+        </button>
+
+        <button (click)="openTransferForm()"
+                class="flex items-center justify-center w-12 h-12 bg-purple-500 hover:bg-purple-600 text-white rounded-lg shadow-md transition-all"
+                title="Transfer">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transactions Table -->
+  <app-transaction-table
+    [transactions]="filteredTransactions"
+    [isLoading]="isLoading"
+    (edit)="onEdit($event)"
+    (delete)="onDelete($event)">
+  </app-transaction-table>
+
+  <!-- Transaction Form Modal -->
+  <app-transaction-form
+    *ngIf="showModal"
+    [type]="modalType"
+    [transaction]="editingTransaction"
+    [accounts]="accounts"
+    [incomeCategories]="incomeCategories"
+    [expenseCategories]="expenseCategories"
+    [userId]="userId"
+    (close)="onModalClose()"
+    (saved)="onTransactionSaved()">
+  </app-transaction-form>
 </div>

@@ -1,1 +1,104 @@
-<p>category-form works!</p>
+<!-- src/app/components/categories/category-form/category-form.html -->
+<div 
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 
+         bg-gray-900/60 backdrop-blur-lg"
+  (click)="onBackgroundClick($event)">
+
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all"
+       (click)="$event.stopPropagation()">
+    
+    <!-- Header -->
+    <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-bold text-gray-900">
+          {{ isEditing ? 'Edit Category' : 'Add New Category' }}
+        </h3>
+        <button (click)="onClose()" 
+                class="p-2 hover:bg-white rounded-lg transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()" class="p-6 space-y-5">
+      
+      <!-- Category Name -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Category Name</label>
+        <input type="text" 
+               formControlName="categoryName"
+               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+               placeholder="e.g., Freelance Income">
+        <div *ngIf="categoryForm.get('categoryName')?.invalid && categoryForm.get('categoryName')?.touched" 
+             class="text-red-600 text-sm mt-1">
+          Category name is required
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Description (Optional)</label>
+        <input type="text" 
+               formControlName="description"
+               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+               placeholder="e.g., Money from freelance projects">
+        <p class="text-xs text-gray-500 mt-1">Add a brief description of this category</p>
+      </div>
+
+      <!-- Category Type -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-3">Category Type</label>
+        <div class="grid grid-cols-2 gap-3">
+          <label *ngFor="let type of categoryTypes" 
+                 class="relative cursor-pointer">
+            <input type="radio" 
+                   formControlName="categoryType" 
+                   [value]="type.value"
+                   class="peer sr-only">
+            <div class="p-4 text-center border-2 border-gray-200 rounded-xl hover:border-purple-300 peer-checked:border-purple-600 peer-checked:bg-purple-50 transition-all">
+              <div class="text-3xl mb-1">{{ type.icon }}</div>
+              <div class="text-sm font-medium text-gray-700">{{ type.label }}</div>
+            </div>
+          </label>
+        </div>
+        <div *ngIf="categoryForm.get('categoryType')?.invalid && categoryForm.get('categoryType')?.touched" 
+             class="text-red-600 text-sm mt-1">
+          Please select a category type
+        </div>
+      </div>
+
+      <!-- Info Message -->
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p class="text-xs text-blue-800">
+          This category will be personal to you and can be used in transactions and budgets.
+        </p>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="bg-red-100 text-red-700 px-4 py-3 rounded-lg text-sm">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-3 pt-4">
+        <button type="button" 
+                (click)="onClose()"
+                class="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+          Cancel
+        </button>
+        <button type="submit" 
+                [disabled]="isSubmitting"
+                class="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition-all disabled:opacity-50">
+          {{ isSubmitting ? 'Saving...' : (isEditing ? 'Update Category' : 'Create Category') }}
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>

@@ -34,8 +34,8 @@ public class AccountsController {
     @Autowired
     AccountsServices accountsServices;
 
-    @PostMapping("/add-account")
-    public ResponseEntity<AccountsEntity> addAccount(
+    @PostMapping("/create-account")
+    public ResponseEntity<AccountsEntity> createAccount(
             @Validated(OnCreate.class) @RequestBody AccountsEntity account) {
         LOG.info("Entered addAccount()...");
         return ResponseEntity.ok(accountsServices.createAccount(account));

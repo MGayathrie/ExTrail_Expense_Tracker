@@ -1,6 +1,9 @@
 package com.extrail.extrail_expense_tracker.services;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,13 +15,12 @@ import com.extrail.extrail_expense_tracker.dao.entity.RolesEntity;
 import com.extrail.extrail_expense_tracker.dao.entity.UserEntity;
 import com.extrail.extrail_expense_tracker.dto.CreateGlobalCategoryRequestDto;
 import com.extrail.extrail_expense_tracker.dto.CreateUserCategoryRequestDto;
+import com.extrail.extrail_expense_tracker.exception.EntityNotFountException;
+import com.extrail.extrail_expense_tracker.exception.InvalidActionException;
 import com.extrail.extrail_expense_tracker.utils.CategoryScope;
 import com.extrail.extrail_expense_tracker.utils.CategoryType;
 
 import jakarta.transaction.Transactional;
-
-import com.extrail.extrail_expense_tracker.exception.EntityNotFountException;
-import com.extrail.extrail_expense_tracker.exception.InvalidActionException;
 
 @Service
 public class CategoriesServices {
@@ -37,21 +39,21 @@ public class CategoriesServices {
         if (category.getCategoryType() == null) throw new InvalidActionException("Category type must not be null");
 
         if (category.getScope() == CategoryScope.user) {
-            if (category.getOwnerUserId() == null || category.getOwnerUserId().getUserId() == null)
+            if (category.getOwnerUser() == null || category.getOwnerUser().getUserId() == null)
                 throw new InvalidActionException("User-scoped categories must include owner userId");
 
             // ensure owner exists
-            category.setOwnerUserId(resolveUser(category.getOwnerUserId()));
+            category.setOwnerUser(resolveUser(category.getOwnerUser()));
 
             // uniqueness (user + name)
-            if (categoriesDao.existsByScopeAndOwnerUserId_UserIdAndCategoryNameIgnoreCase(
-                    CategoryScope.user, category.getOwnerUserId().getUserId(), category.getCategoryName()))
+            if (categoriesDao.existsByScopeAndOwnerUser_UserIdAndCategoryNameIgnoreCase(
+                    CategoryScope.user, category.getOwnerUser().getUserId(), category.getCategoryName()))
                 throw new InvalidActionException("Category already exists for user");
         } else {
             // global → enforce uniqueness and null owner
             if (categoriesDao.existsByScopeAndCategoryNameIgnoreCase(CategoryScope.global, category.getCategoryName()))
                 throw new InvalidActionException("Global category already exists");
-            category.setOwnerUserId(null);
+            category.setOwnerUser(null);
         }
 
         category.setCategoryName(category.getCategoryName().trim());
@@ -63,13 +65,13 @@ public class CategoriesServices {
         if (req == null) throw new InvalidActionException("Category payload must not be null");
         if (isBlank(req.getCategoryName())) throw new InvalidActionException("Category name must not be blank");
         if (req.getCategoryType() == null) throw new InvalidActionException("Category type must not be null");
-        if (req.getOwnerUserId() == null) throw new InvalidActionException("User-scoped categories must include owner userId");
+        if (req.getOwnerUser() == null) throw new InvalidActionException("User-scoped categories must include owner userId");
 
-        UserEntity owner = userDao.findById(req.getOwnerUserId())
-                .orElseThrow(() -> new EntityNotFountException(req.getOwnerUserId(), "User"));
+        UserEntity owner = userDao.findById(req.getOwnerUser())
+                .orElseThrow(() -> new EntityNotFountException(req.getOwnerUser(), "User"));
 
-        if (categoriesDao.existsByScopeAndOwnerUserId_UserIdAndCategoryNameIgnoreCase(
-                CategoryScope.user, req.getOwnerUserId(), req.getCategoryName()))
+        if (categoriesDao.existsByScopeAndOwnerUser_UserIdAndCategoryNameIgnoreCase(
+                CategoryScope.user, req.getOwnerUser(), req.getCategoryName()))
             throw new InvalidActionException("Category already exists for user");
 
         CategoriesEntity c = new CategoriesEntity();
@@ -77,7 +79,7 @@ public class CategoriesServices {
         c.setDescription(req.getDescription());
         c.setCategoryType(req.getCategoryType());
         c.setScope(CategoryScope.user);
-        c.setOwnerUserId(owner);
+        c.setOwnerUser(owner);
         return categoriesDao.save(c);
     }
 
@@ -95,7 +97,7 @@ public class CategoriesServices {
         c.setDescription(req.getDescription());
         c.setCategoryType(req.getCategoryType());
         c.setScope(CategoryScope.global);
-        c.setOwnerUserId(null);
+        c.setOwnerUser(null);
         return categoriesDao.save(c);
     }
 
@@ -116,18 +118,25 @@ public class CategoriesServices {
 
     public List<CategoriesEntity> getByOwnerUserId(Integer ownerUserId) {
         if (ownerUserId == null) throw new InvalidActionException("Owner userId must not be null");
-        return categoriesDao.findByOwnerUserId_UserId(ownerUserId);
+        return categoriesDao.findByOwnerUser_UserId(ownerUserId);
     }
 
-    public List<CategoriesEntity> listForUser(Integer userId, CategoryType type) {
-        if (userId == null) throw new InvalidActionException("userId must not be null");
-        if (type == null) throw new InvalidActionException("category type must not be null");
+public List<CategoriesEntity> listForUser(Integer userId, CategoryType type) {
+    if (userId == null) throw new InvalidActionException("userId must not be null");
+    if (type == null) throw new InvalidActionException("category type must not be null");
 
-        List<CategoriesEntity> globals = categoriesDao.findByScopeAndCategoryType(CategoryScope.global, type);
-        List<CategoriesEntity> personals = categoriesDao.findByOwnerUserId_UserIdAndCategoryType(userId, type);
-        globals.addAll(personals);
-        return globals;
-    }
+    // Get both global and user categories
+    List<CategoriesEntity> globals = categoriesDao.findByScopeAndCategoryType(CategoryScope.global, type);
+    List<CategoriesEntity> personals = categoriesDao.findByOwnerUser_UserIdAndCategoryType(userId, type);
+    
+    // Use LinkedHashSet to maintain order and remove duplicates by categoryId
+    Set<CategoriesEntity> uniqueCategories = new LinkedHashSet<>();
+    uniqueCategories.addAll(globals);
+    uniqueCategories.addAll(personals);
+    
+    return new ArrayList<>(uniqueCategories);
+}
+
 
     @Transactional
     public CategoriesEntity updateCategory(Integer categoryId, CategoriesEntity update) {
@@ -147,9 +156,9 @@ public class CategoriesServices {
                     throw new InvalidActionException("Global category already exists");
                 }
             } else {
-                Integer ownerId = (existing.getOwnerUserId() != null) ? existing.getOwnerUserId().getUserId() : null;
+                Integer ownerId = (existing.getOwnerUser() != null) ? existing.getOwnerUser().getUserId() : null;
                 if (ownerId != null &&
-                    categoriesDao.existsByScopeAndOwnerUserId_UserIdAndCategoryNameIgnoreCase(
+                    categoriesDao.existsByScopeAndOwnerUser_UserIdAndCategoryNameIgnoreCase(
                         CategoryScope.user, ownerId, newName) &&
                     !existing.getCategoryName().equalsIgnoreCase(newName)) {
                     throw new InvalidActionException("Category already exists for user");
@@ -167,11 +176,11 @@ public class CategoriesServices {
         if (update.getScope() != null) {
             existing.setScope(update.getScope());
             if (update.getScope() == CategoryScope.global) {
-                existing.setOwnerUserId(null);
+                existing.setOwnerUser(null);
             }
         }
-        if (update.getOwnerUserId() != null) {
-            existing.setOwnerUserId(resolveUser(update.getOwnerUserId()));
+        if (update.getOwnerUser() != null) {
+            existing.setOwnerUser(resolveUser(update.getOwnerUser()));
             existing.setScope(CategoryScope.user); // ensure consistency
         }
 
@@ -199,10 +208,10 @@ public class CategoriesServices {
         String trimmed = newName.trim();
 
         if (c.getScope() == CategoryScope.user) {
-            Integer owner = (c.getOwnerUserId() != null) ? c.getOwnerUserId().getUserId() : null;
+            Integer owner = (c.getOwnerUser() != null) ? c.getOwnerUser().getUserId() : null;
             if (owner == null || !owner.equals(actorUserId))
                 throw new InvalidActionException("Not allowed to rename this category");
-            if (categoriesDao.existsByScopeAndOwnerUserId_UserIdAndCategoryNameIgnoreCase(
+            if (categoriesDao.existsByScopeAndOwnerUser_UserIdAndCategoryNameIgnoreCase(
                     CategoryScope.user, owner, trimmed) &&
                 !c.getCategoryName().equalsIgnoreCase(trimmed)) {
                 throw new InvalidActionException("Category already exists for user");
@@ -236,7 +245,7 @@ public class CategoriesServices {
                 .orElseThrow(() -> new EntityNotFountException(categoryId, "Category"));
 
         if (c.getScope() == CategoryScope.user) {
-            Integer owner = (c.getOwnerUserId() != null) ? c.getOwnerUserId().getUserId() : null;
+            Integer owner = (c.getOwnerUser() != null) ? c.getOwnerUser().getUserId() : null;
             if (owner == null || !owner.equals(actorUserId))
                 throw new InvalidActionException("Not allowed to delete this category");
         } else {

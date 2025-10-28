@@ -1,1 +1,15 @@
-<p>filter-bar works!</p>
+<!-- src/app/components/analysis/filter-bar/filter-bar.html -->
+<div class="w-full" style="height: 400px;">
+  <canvas #lineChartCanvas></canvas>
+</div>
+
+<!-- Empty State -->
+<div *ngIf="data.length === 0" class="flex items-center justify-center h-64 text-gray-500">
+  <div class="text-center">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+    </svg>
+    <p class="text-lg font-medium">No spending data for this month</p>
+    <p class="text-sm mt-1">Add some expense transactions to see the trend</p>
+  </div>
+</div>

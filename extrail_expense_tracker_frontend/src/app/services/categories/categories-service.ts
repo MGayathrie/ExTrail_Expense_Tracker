@@ -12,7 +12,7 @@ import {
 @Injectable({
   providedIn: 'root'
 })
-export class Categories {
+export class CategoriesService {
   private baseUrl = 'http://localhost:8080/categories';
 
   constructor(private http: HttpClient) {}

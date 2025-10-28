@@ -8,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import com.extrail.extrail_expense_tracker.utils.CategoryScope;
 import com.extrail.extrail_expense_tracker.utils.CategoryType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,6 +21,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -58,7 +60,7 @@ public class CategoriesEntity {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="owner_user_id")  // null when global
-    private UserEntity ownerUserId;
+    private UserEntity ownerUser;
 
     @CreationTimestamp 
     @Column(name="created_at", nullable=false) 
@@ -67,4 +69,20 @@ public class CategoriesEntity {
     @UpdateTimestamp 
     @Column(name="updated_at", nullable=false)
     private LocalDateTime updatedAt;
+
+    // CategoriesEntity.java - ADD THIS
+
+    // ADD THIS: Expose ownerUserId as Integer for JSON
+    @Transient
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public Integer getOwnerUserId() {
+        return ownerUser != null ? ownerUser.getUserId() : null;
+    }
+
+    // ADD THIS: For backwards compatibility
+    @JsonIgnore
+    public UserEntity getOwnerUserEntity() {
+        return ownerUser;
+    }
+
 }

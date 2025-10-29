@@ -7,7 +7,7 @@ import { AccountsModel, AccountType } from '../../models/accounts.model';
   providedIn: 'root'
 })
 export class AccountsService {
-  private baseUrl = 'http://localhost:8080/accounts';
+  private baseUrl = 'http://18.179.152.175:8081/accounts';
 
   constructor(private http: HttpClient) {}
 

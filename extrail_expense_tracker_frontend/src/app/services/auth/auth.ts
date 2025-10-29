@@ -89,7 +89,7 @@ export class Auth {
   //     return true;
   //   }
   //   return false;  }
-private apiUrl = 'http://localhost:8080/auth';
+private apiUrl = 'http://18.179.152.175:8081/auth';
   private tokenKey = 'jwt_token';
   private userKey = 'current_user';
   

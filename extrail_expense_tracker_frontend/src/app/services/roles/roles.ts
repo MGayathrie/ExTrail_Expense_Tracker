@@ -7,7 +7,7 @@ import { RolesModel } from '../../models/roles.model';
   providedIn: 'root'
 })
 export class Roles {
-  private baseUrl = 'http://localhost:8080/roles';
+  private baseUrl = 'http://18.179.152.175:8081/roles';
 
   constructor(private http: HttpClient) {}
 

@@ -13,7 +13,7 @@ import {
   providedIn: 'root'
 })
 export class CategoriesService {
-  private baseUrl = 'http://localhost:8080/categories';
+  private baseUrl = 'http://18.179.152.175:8081/categories';
 
   constructor(private http: HttpClient) {}
 

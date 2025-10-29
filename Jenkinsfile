@@ -58,7 +58,7 @@ pipeline {
         stage('Deploy Application') {
             steps {
                 echo '🚀 Deploying application on same EC2...'
-                sh '''
+                sh '''bash -c "
                     # Copy compose file to app directory
                     cp docker-compose.prod.yml /home/ubuntu/extrail-expense-tracker/
                     cd /home/ubuntu/extrail-expense-tracker
@@ -81,8 +81,9 @@ pipeline {
                     docker image prune -f
                     
                     # Show running containers
-                    echo "✅ Deployment complete! Running containers:"
+                    echo '✅ Deployment complete! Running containers:'
                     docker ps
+                "
                 '''
             }
         }

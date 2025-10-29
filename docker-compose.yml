@@ -1,0 +1,63 @@
+# version: "3.8"
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: extrail-mysql
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: extrail
+      MYSQL_ROOT_PASSWORD: mySql@Gaya18*
+      MYSQL_USER: extrail
+      MYSQL_PASSWORD: extrail123
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - extrail-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "extrail", "-pextrail123"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./extrail_expense_tracker_backend
+    container_name: extrail-backend
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/extrail?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: extrail
+      SPRING_DATASOURCE_PASSWORD: extrail123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      APP_JWT_SECRET: VGhpc0lzQVNlY3VyZUxvbmdTZWNyZXRLZXlGb3JKV1Q3RW5jb2RlZC1ieS1CYXNlNjQtMjU2Yml0
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    networks:
+      - extrail-network
+
+  frontend:
+    build:
+      context: ./extrail_expense_tracker_frontend
+    container_name: extrail-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "4200:80"
+    networks:
+      - extrail-network
+
+networks:
+  extrail-network:
+    driver: bridge
+
+volumes:
+  db_data:
+    driver: local

@@ -64,7 +64,9 @@ pipeline {
                     cd /home/ubuntu/extrail-expense-tracker
                     
                     # Load environment variables
-                    export $(cat .env | xargs)
+                    set -a
+                    source .env
+                    set +a
                     
                     # Pull latest images
                     docker-compose -f docker-compose.prod.yml pull

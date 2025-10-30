@@ -20,7 +20,7 @@ pipeline {
             }
         }
         
-        //backend build - goes to backend dir in the github and build using maven - mainly to run code, and check if the code runs properly
+        //backend build  
         stage('Build Backend') {
             steps {
                 echo '🏗️ Building Backend with Maven...'
@@ -29,7 +29,7 @@ pipeline {
                 }
             }
         }
-        //building frontend - mainly to run code, and check if the code runs properly
+        //building frontend 
         stage('Build Frontend') {
             steps {
                 echo '🎨 Building Frontend with npm...'
@@ -65,7 +65,7 @@ pipeline {
                 echo '🚀 Deploying application on same EC2...'
                 sh '''bash -c "
                     # Copy compose file to app directory
-                    
+
                     cp docker-compose.prod.yml /home/ubuntu/extrail-expense-tracker/
                     cd /home/ubuntu/extrail-expense-tracker
                     

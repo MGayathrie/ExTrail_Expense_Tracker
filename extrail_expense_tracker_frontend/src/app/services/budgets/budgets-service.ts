@@ -7,7 +7,7 @@ import { BudgetsModel } from '../../models/budgets.model';
   providedIn: 'root'
 })
 export class BudgetsService {
-  private baseUrl = 'http://57.183.38.86:8081/budgets';
+  private baseUrl = 'http://3.114.12.199:8081/budgets';
 
   constructor(private http: HttpClient) {}
 

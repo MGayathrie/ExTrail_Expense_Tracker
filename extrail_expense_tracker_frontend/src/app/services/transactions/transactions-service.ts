@@ -7,7 +7,7 @@ import { TransactionsModel } from '../../models/transactions.model';
   providedIn: 'root'
 })
 export class TransactionsService {
-  private baseUrl = 'http://57.183.38.86:8081/transactions';
+  private baseUrl = 'http://3.114.12.199:8081/transactions';
 
   constructor(private http: HttpClient) {}
 

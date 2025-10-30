@@ -8,7 +8,7 @@ import { UserPasswordUpdateModel } from '../../models/user-password-update.model
   providedIn: 'root'
 })
 export class Users {
-  private baseUrl = 'http://3.114.12.199:8081/users';
+  private baseUrl = 'http://52.197.2.245:8081/users';
 
   constructor(private http: HttpClient) {}
 

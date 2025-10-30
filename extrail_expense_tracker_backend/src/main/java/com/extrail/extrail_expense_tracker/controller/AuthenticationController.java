@@ -22,7 +22,7 @@ import com.extrail.extrail_expense_tracker.exception.InvalidActionException;
 import com.extrail.extrail_expense_tracker.services.JwtService;
 import com.extrail.extrail_expense_tracker.services.UserServices;
 
-@CrossOrigin(origins = "http://3.114.12.199", allowCredentials = "true")
+@CrossOrigin(origins = "http://52.197.2.245", allowCredentials = "true")
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {

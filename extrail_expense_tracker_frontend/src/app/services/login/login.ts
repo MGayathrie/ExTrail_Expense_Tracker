@@ -10,7 +10,7 @@ import { UserResponseModel } from '../../models/user-response.model';
 export class Login {
   constructor(private httpclient: HttpClient) {}
   // private baseUrl = 'http://localhost:8080/auth';
-  baseUrl: string = "http://3.114.12.199:8081/auth";
+  baseUrl: string = "http://52.197.2.245:8081/auth";
 
   // authenticate(credentials: UserAuthModel): Observable<UserResponseModel> {
   //   return this.httpclient.post<UserResponseModel>(`${this.baseUrl}/validate`, credentials);

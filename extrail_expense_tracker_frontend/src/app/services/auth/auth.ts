@@ -89,7 +89,7 @@ export class Auth {
   //     return true;
   //   }
   //   return false;  }
-private apiUrl = 'http://3.114.12.199:8081/auth';
+private apiUrl = 'http://52.197.2.245:8081/auth';
   private tokenKey = 'jwt_token';
   private userKey = 'current_user';
   
